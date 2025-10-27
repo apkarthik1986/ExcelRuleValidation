@@ -314,8 +314,7 @@ class RuleParser:
         # Quoted strings are ALWAYS treated as string literals, never as column references
         if (value_str.startswith('"') and value_str.endswith('"')) or \
            (value_str.startswith("'") and value_str.endswith("'")):
-            # Remove quotes and return as a tuple to mark it as a literal
-            # Use a special prefix to distinguish from column names
+            # Remove quotes and return with a special prefix to mark it as a literal
             return f"__LITERAL__{value_str[1:-1]}"
         
         # Check if it's a column reference

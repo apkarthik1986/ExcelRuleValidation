@@ -44,9 +44,9 @@ def test_quoted_strings():
     # Row 0: 'Active' == 'Active' = True
     # Row 1: 'Inactive' == 'Active' = False
     # Row 2: 'Active' == 'Active' = True
-    assert results1[0].passed == True
-    assert results1[1].passed == False
-    assert results1[2].passed == True
+    assert results1[0].passed
+    assert not results1[1].passed
+    assert results1[2].passed
     print(f"  ✓ String literal comparison works correctly")
     
     print("✓ Quoted string literals test passed!\n")
@@ -73,9 +73,9 @@ def test_backward_compatibility():
     engine = RuleEngine()
     results = engine.validate(data, [rule])
     
-    assert results[0].passed == True
-    assert results[1].passed == False
-    assert results[2].passed == True
+    assert results[0].passed
+    assert not results[1].passed
+    assert results[2].passed
     print(f"  ✓ Backward compatibility maintained")
     
     print("✓ Backward compatibility test passed!\n")
