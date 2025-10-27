@@ -1,5 +1,5 @@
 """
-Simple tests for Excel Rule Validation System
+Tests for Excel Rule Validation System (updated for expression-based rules)
 """
 import pandas as pd
 import sys
@@ -20,18 +20,18 @@ def test_rule_parser():
     parser = RuleParser()
     columns = ['Current', 'JB_Property', 'Ratio']
     
-    # Test simple rule
-    rule_text = "If Current is greater than 2, then validation ok"
-    rule = parser.parse_rule(rule_text, columns)
+    # Test simple rule (expression-based)
+    rule_text = "Current>2"
+    rule = parser.parse_rule(rule_text, columns, rule_name="test1")
     
     assert rule is not None
     assert len(rule.conditions) > 0
     assert rule.conditions[0].column == 'Current'
     print(f"  ✓ Simple rule parsed: {rule.name}")
     
-    # Test complex rule
-    rule_text2 = "If Current is greater than 2 and JB_Property is YES, then JB validation ok"
-    rule2 = parser.parse_rule(rule_text2, columns)
+    # Test complex rule (expression-based)
+    rule_text2 = "(Current>2) AND (JB_Property=YES)"
+    rule2 = parser.parse_rule(rule_text2, columns, rule_name="test2")
     
     assert rule2 is not None
     assert len(rule2.conditions) == 2
@@ -51,11 +51,12 @@ def test_rule_engine():
         'Ratio': [5.0, 4.0, 5.5]
     })
     
-    # Create rule
+    # Create rule (expression-based)
     parser = RuleParser()
     rule = parser.parse_rule(
-        "If Current is greater than 2 and JB_Property is YES, then validation ok",
-        data.columns.tolist()
+        "(Current>2) AND (JB_Property=YES)",
+        data.columns.tolist(),
+        rule_name="test_rule"
     )
     
     # Validate
@@ -96,15 +97,17 @@ def test_integration():
     assert len(loaded_data) == 3
     print(f"  ✓ Loaded {len(loaded_data)} rows")
     
-    # Parse rules
+    # Parse rules (expression-based)
     parser = RuleParser()
     rule1 = parser.parse_rule(
-        "If Current is greater than 2 and JB_Property is YES, then JB validation ok",
-        loaded_data.columns.tolist()
+        "(Current>2) AND (JB_Property=YES)",
+        loaded_data.columns.tolist(),
+        rule_name="Rule1"
     )
     rule2 = parser.parse_rule(
-        "If Ratio is greater than 5, then Ratio exceeds limit",
-        loaded_data.columns.tolist()
+        "Ratio>5",
+        loaded_data.columns.tolist(),
+        rule_name="Rule2"
     )
     print(f"  ✓ Parsed 2 rules")
     

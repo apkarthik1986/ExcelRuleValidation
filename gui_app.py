@@ -118,9 +118,10 @@ class ExcelRuleValidationApp:
         
         # Instructions
         instructions = (
-            "Enter rules in natural language. Examples:\n"
-            "  • If current is greater than 2 and has JB property YES, then JB validation is ok\n"
-            "  • If starting current to rated current ratio is less than 5, then starting current error"
+            "Enter rules using expression-based syntax. Examples:\n"
+            "  • (A>B) AND (X=G) - column comparison with AND\n"
+            "  • voltage contains \"cc_r\" - string contains check\n"
+            "  • Current>Threshold - column-to-column comparison"
         )
         ttk.Label(
             rule_frame, 
@@ -278,7 +279,9 @@ class ExcelRuleValidationApp:
         
         try:
             columns = self.data.columns.tolist()
-            rule = self.rule_parser.parse_rule(rule_text, columns)
+            # Auto-generate rule name from expression
+            rule_name = f"Rule{len(self.rules) + 1}"
+            rule = self.rule_parser.parse_rule(rule_text, columns, rule_name=rule_name)
             self.rules.append(rule)
             
             # Add to listbox

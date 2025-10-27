@@ -27,9 +27,10 @@ Examples:
   # Export results to a file
   python cli_app.py data.xlsx --output results.txt
 
-Rule Examples:
-  If current is greater than 2 and has JB property YES, then JB validation is ok
-  If starting current to rated current ratio is less than 5, then starting current error
+Rule Examples (Expression-Based):
+  (A>B) AND (X=G)
+  Current>Threshold
+  voltage contains "cc_r"
         '''
     )
     
@@ -99,7 +100,9 @@ Rule Examples:
                 line = line.strip()
                 if line and not line.startswith('#'):
                     try:
-                        rule = rule_parser.parse_rule(line, data.columns.tolist())
+                        # Auto-generate rule names for CLI
+                        rule_name = f"Rule{line_num}"
+                        rule = rule_parser.parse_rule(line, data.columns.tolist(), rule_name=rule_name)
                         rules.append(rule)
                         print(f"  ✓ Rule {line_num}: {rule.name}")
                     except Exception as e:
@@ -110,10 +113,11 @@ Rule Examples:
         print("\n" + "=" * 80)
         print("INTERACTIVE RULE DEFINITION MODE")
         print("=" * 80)
-        print("Enter rules in natural language (or 'done' to finish):")
+        print("Enter rules using expression-based syntax (or 'done' to finish):")
         print("\nExamples:")
-        print("  • If current is greater than 2 and has JB property YES, then JB validation is ok")
-        print("  • If ratio is less than 5, then ratio error")
+        print("  • (A>B) AND (X=G) - column comparison with AND")
+        print("  • voltage contains \"cc_r\" - string contains check")
+        print("  • Current>Threshold - column-to-column comparison")
         print()
         
         while True:
@@ -125,7 +129,9 @@ Rule Examples:
                 continue
             
             try:
-                rule = rule_parser.parse_rule(rule_text, data.columns.tolist())
+                # Auto-generate rule names for interactive mode
+                rule_name = f"Rule{len(rules) + 1}"
+                rule = rule_parser.parse_rule(rule_text, data.columns.tolist(), rule_name=rule_name)
                 rules.append(rule)
                 print(f"  ✓ Added rule: {rule.name}")
             except Exception as e:
