@@ -308,7 +308,15 @@ class RuleParser:
     
     def _parse_value(self, value_str: str, available_columns: List[str]) -> Any:
         """Parse a value, which can be a number, string, or column reference."""
-        value_str = value_str.strip().strip('"\'')
+        value_str = value_str.strip()
+        
+        # Check if it's a quoted string (for text literals)
+        # Quoted strings are ALWAYS treated as string literals, never as column references
+        if (value_str.startswith('"') and value_str.endswith('"')) or \
+           (value_str.startswith("'") and value_str.endswith("'")):
+            # Remove quotes and return as a tuple to mark it as a literal
+            # Use a special prefix to distinguish from column names
+            return f"__LITERAL__{value_str[1:-1]}"
         
         # Check if it's a column reference
         col = self._find_column(value_str, available_columns)
@@ -324,7 +332,7 @@ class RuleParser:
         except ValueError:
             pass
         
-        # Return as string
+        # Return as string (for backward compatibility with unquoted strings like YES/NO)
         return value_str
     
     def _map_operator(self, op_str: str) -> ConditionType:

@@ -119,15 +119,15 @@ def test_additional_features():
     # Test various operators
     tests = [
         ("Current>Threshold", "Column-to-column comparison"),
-        ("(Current>2) AND (Status=Active)", "Multiple conditions with AND"),
+        ('(Current>2) AND (Status="Active")', "Multiple conditions with AND"),
         ("(Voltage>120) OR (Current<1)", "Multiple conditions with OR"),
         ("Current>=2.5", "Greater than or equal"),
         ("Current<=10", "Less than or equal"),
-        ("Status!=Inactive", "Not equal"),
+        ('Status!="Inactive"', "Not equal"),
     ]
     
-    for expression, description in tests:
-        rule = parser.parse_rule(expression, columns, rule_name=f"test_{description.replace(' ', '_')}")
+    for i, (expression, description) in enumerate(tests, 1):
+        rule = parser.parse_rule(expression, columns, rule_name=f"test_{i}")
         print(f"  ✓ {description}: {expression}")
     
     print("✓ Additional features test OK!\n")

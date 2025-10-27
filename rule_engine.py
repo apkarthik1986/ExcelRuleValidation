@@ -124,9 +124,14 @@ class RuleEngine:
         
         cell_value = row[condition.column]
         
-        # Check if condition.value is a column reference
+        # Check if condition.value is a column reference or a string literal
         comparison_value = condition.value
-        if isinstance(comparison_value, str) and comparison_value in row.index:
+        
+        # Handle special __LITERAL__ prefix for quoted strings
+        if isinstance(comparison_value, str) and comparison_value.startswith('__LITERAL__'):
+            # Remove the literal marker
+            comparison_value = comparison_value[len('__LITERAL__'):]
+        elif isinstance(comparison_value, str) and comparison_value in row.index:
             # Value is a column reference, get its value from the row
             comparison_value = row[comparison_value]
         
