@@ -4,60 +4,77 @@ A powerful Windows application for validating Excel data using expression-based 
 
 ## Features
 
-- ✅ **Expression-Based Rules**: Define validation rules using column names and operators
-- ✅ **Excel File Support**: Read and validate .xlsx and .xls files
-- ✅ **Dynamic Rule Engine**: Rules are parsed and applied automatically
-- ✅ **Windows GUI**: User-friendly graphical interface using tkinter
-- ✅ **Command-Line Interface**: CLI for automation and scripting
-- ✅ **Comprehensive Reports**: Detailed validation results and exports
+- ✅ **Expression-Based Rules**: Define validation rules using column names and operators with intuitive syntax
+- ✅ **Excel File Support**: Read and validate .xlsx and .xls files with auto-detection of header rows
+- ✅ **Dynamic Rule Engine**: Rules are parsed and applied automatically with support for complex conditions
+- ✅ **Modern Windows GUI**: User-friendly graphical interface with tabbed layout and Data-first design
+- ✅ **Context Menu Support**: Right-click to copy example rules and expressions
+- ✅ **Rule Management**: Enable/disable rules, save/load rule sets, and organize validations
+- ✅ **Command-Line Interface**: CLI for automation and scripting needs
+- ✅ **Comprehensive Reports**: Detailed validation results with export capabilities
 
 ## Installation
 
-### Prerequisites
+### System Requirements
 
-- Python 3.8 or higher
-- Windows OS (for GUI application)
+#### Minimum Requirements
+- **Operating System**: Windows 7 or higher
+- **Python**: Version 3.10 or higher
+- **RAM**: 4 GB minimum
+- **Disk Space**: 500 MB for installation and dependencies
 
-### Setup
+#### Recommended
+- **Operating System**: Windows 10/11 
+- **Python**: Version 3.11 (recommended for best performance)
+- **RAM**: 8 GB or more
+- **Disk Space**: 1 GB
 
-1. Clone this repository:
+### Quick Setup (Windows)
+
+1. Install Python 3.11 from [python.org](https://www.python.org/downloads/)
+   - ✅ **IMPORTANT**: Check "Add Python to PATH" during installation
+
+2. Clone this repository:
 ```bash
 git clone https://github.com/apkarthik1986/ExcelRuleValidation.git
 cd ExcelRuleValidation
 ```
 
-2. Install required dependencies:
+3. Run the automatic setup:
 ```bash
-pip install -r requirements.txt
+setup.bat
 ```
 
-### Optional / Development Dependencies (ML)
+This will create a Python virtual environment and install all dependencies.
 
-The repository includes optional, heavy ML/NLP packages used for advanced
-features (like transformer-based rule understanding and embeddings). These
-are not required to run the GUI or the tests, and they can be installed into
-an isolated development environment when needed.
+### Manual Setup
 
-To install the optional packages into a separate venv (recommended):
+If you prefer manual control, you can set up the environment yourself:
 
 ```powershell
-# Create a Python 3.11 venv (recommended for binary wheels)
+# Create a Python 3.11 virtual environment
 py -3.11 -m venv .venv311
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
 .\.venv311\Scripts\Activate.ps1
 python -m pip install --upgrade pip
-python -m pip install -r requirements-dev.txt
+pip install -r requirements.txt
 ```
 
-If you prefer conda (often easier for binary packages on Windows):
+### Dependencies
 
-```powershell
-conda create -n excelrules python=3.11 -y
-conda activate excelrules
-conda install -c conda-forge spacy transformers sentence-transformers -y
-conda install -c conda-forge pytorch cpuonly -y
-# Then install the remaining project requirements
-pip install -r requirements.txt --no-deps
+The application requires the following main packages:
+- `pandas>=2.0.0`: For Excel data handling
+- `openpyxl>=3.1.2`: For Excel file support
+- `pytest>=8.4.2`: For testing
+
+Optional ML/NLP features require:
+- `spacy>=3.7.0`: For text analysis
+- `transformers>=4.30.0`: For advanced NLP
+- `torch>=2.0.0`: For ML operations
+- `sentence-transformers>=2.2.0`: For semantic analysis
+- `numpy>=1.24.0`: For numerical operations
+
+These are included in `requirements.txt` but can be installed separately in an isolated environment if needed.
 ```
 
 Note: `torch` can be large and has platform-specific wheels. If you want a
@@ -70,16 +87,43 @@ CPU-only wheel, use the PyTorch CPU index or conda as shown above.
 
 Launch the graphical interface:
 ```bash
+start_gui.bat
+# Or manually:
 python gui_app.py
 ```
 
-**Steps:**
-1. Click "Browse..." to select your Excel file
-2. Click "Load Data" to load the Excel data
-3. Enter validation rules using expression syntax
-4. Click "Add Rule" to add each rule
-5. Click "Validate Data" to run validation
-6. View results and export if needed
+#### Modern Interface Features
+- **Tabbed Layout**: Organized sections for Data, Rules, Validation, and Examples
+- **Data-First Design**: Data tab is selected by default for quick data loading
+- **Smart Header Detection**: Auto-detect header rows or specify manually
+- **Interactive Examples**: Copy examples via right-click menu
+- **Rule Management**: Enable/disable rules with double-click
+- **Rule Organization**: Save and load rule sets for reuse
+
+#### Workflow
+1. **Data Loading**:
+   - Click "Browse..." to select Excel file
+   - Set header row (default: 1) or use auto-detect
+   - Click "Load Data" to preview the Excel data
+
+2. **Rule Creation**:
+   - Switch to Rules tab
+   - Enter validation rules using expression syntax
+   - Double-click examples to use them as templates
+   - Click "Add Rule" to add each rule
+   - Enable/disable rules with double-click
+
+3. **Validation**:
+   - Switch to Validation tab
+   - Click "Validate Data" to run checks
+   - View detailed results in the output area
+   - Export results for documentation
+
+4. **Examples & Help**:
+   - Browse example rules in Examples tab
+   - Right-click to copy examples
+   - Use column selector for quick insertion
+   - Reference rule snippets for complex validations
 
 ### Command-Line Interface
 
@@ -114,37 +158,78 @@ column operator value
 - **String**: contains, starts_with, ends_with
 - **Logical**: AND, OR
 
-### Example Rules
+### Validation Rules Guide
 
-1. **Simple Comparison**:
+#### Basic Operators
+| Category | Operators | Example |
+|----------|-----------|---------|
+| Comparison | `>`, `<`, `>=`, `<=`, `=`, `!=` | `Current>2`, `Status!=Error` |
+| String | `contains`, `startswith`, `endswith` | `Name contains "test"` |
+| Logical | `AND`, `OR`, `NOT` | `(A>2) AND (B<5)` |
+| Special | `between`, `in`, `regex_match` | `Value between 1 and 10` |
+
+#### Example Rules
+
+1. **Simple Comparisons**:
    ```
    Current>2
+   Status=Active
+   Temperature<=100
    ```
 
-2. **Multiple Conditions with AND**:
+2. **String Operations**:
+   ```
+   Name contains "test"
+   ID startswith "EQ"
+   Code endswith "_VALID"
+   ```
+
+3. **Multiple Conditions**:
    ```
    (Current>2) AND (JB_Property=YES)
+   (A>10) OR (B<5)
+   NOT (Status=Error)
    ```
 
-3. **Column-to-Column Comparison**:
+4. **Column Comparisons**:
    ```
    Starting_Current>Rated_Current
+   Temperature<Max_Limit
+   Actual_Value>=Expected_Value
    ```
 
-4. **String Contains Check**:
+5. **Complex Logic**:
    ```
-   voltage contains "cc_r"
-   ```
-
-5. **OR Logic**:
-   ```
-   (A>10) OR (B<5)
+   ((A>10 AND B<5) OR (C='x' AND (D>0 OR E<0)))
+   (Status=Active) AND (NOT(Error_Count>0))
+   (Value between 1 and 10) OR (Code in ('A','B','C'))
    ```
 
-6. **Complex Expression**:
+6. **Advanced Functions**:
    ```
-   (Ratio>5) AND (Status=Active)
+   regex_match(Email, '^[^@]+@example\.com$')
+   trim(Name)='John'
+   LOWER(Category)='approved'
    ```
+
+#### Best Practices
+
+1. **Rule Organization**:
+   - Group related rules together
+   - Use meaningful rule names
+   - Enable/disable rules as needed
+
+2. **Validation Strategy**:
+   - Start with basic rules
+   - Add complexity incrementally
+   - Test with sample data
+   - Save working rule sets
+
+3. **Rule Maintenance**:
+   - Document complex rules
+   - Use the Examples tab for reference
+   - Keep a backup of proven rule sets
+   - Review and update regularly
 
 ## Sample Data
 

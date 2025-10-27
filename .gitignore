@@ -19,11 +19,14 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+.pytest_cache/
 
 # Virtual Environment
 venv/
 ENV/
 env/
+.venv/
+.venv311/
 
 # IDE
 .vscode/
@@ -40,6 +43,10 @@ Thumbs.db
 *.xls~
 temp/
 tmp/
+
+# Project logs and temporary files
+logs/
+sample_smoke.xlsx
 
 # Test files (exclude from commits)
 test_data.xlsx

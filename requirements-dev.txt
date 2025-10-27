@@ -1,0 +1,11 @@
+# Optional / development dependencies (heavy ML packages)
+# These are not required to run the GUI/tests but are used for
+# advanced NLP/ML features (rule understanding, embeddings, etc.).
+spacy>=3.7.0
+transformers>=4.30.0
+torch>=2.0.0
+sentence-transformers>=2.2.0
+
+# Note on torch: if you prefer a CPU-only install, install torch from
+# the official PyTorch index for CPU-only wheels. Example:
+# python -m pip install --index-url https://download.pytorch.org/whl/cpu torch
