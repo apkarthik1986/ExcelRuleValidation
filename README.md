@@ -63,22 +63,13 @@ pip install -r requirements.txt
 ### Dependencies
 
 The application requires the following main packages:
-- `pandas>=2.0.0`: For Excel data handling
-- `openpyxl>=3.1.2`: For Excel file support
-- `pytest>=8.4.2`: For testing
-
-Optional ML/NLP features require:
-- `spacy>=3.7.0`: For text analysis
-- `transformers>=4.30.0`: For advanced NLP
-- `torch>=2.0.0`: For ML operations
-- `sentence-transformers>=2.2.0`: For semantic analysis
+- `pandas>=2.0.0`: For Excel data handling and data analysis
+- `openpyxl>=3.1.2`: For Excel file read/write support
+- `pytest>=8.4.2`: For testing functionality
 - `numpy>=1.24.0`: For numerical operations
 
-These are included in `requirements.txt` but can be installed separately in an isolated environment if needed.
+All required dependencies are included in `requirements.txt` and will be installed automatically during setup.
 ```
-
-Note: `torch` can be large and has platform-specific wheels. If you want a
-CPU-only wheel, use the PyTorch CPU index or conda as shown above.
 
 
 ## Usage
