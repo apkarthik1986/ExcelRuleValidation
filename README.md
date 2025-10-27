@@ -1,10 +1,10 @@
 # Excel Rule Validation System
 
-A powerful Windows application for validating Excel data using natural language rules. Define complex validation rules in plain English and automatically apply them to your Excel data.
+A powerful Windows application for validating Excel data using expression-based rules. Define complex validation rules using column names and operators to automatically validate your Excel data.
 
 ## Features
 
-- ✅ **Natural Language Rules**: Define validation rules in plain English
+- ✅ **Expression-Based Rules**: Define validation rules using column names and operators
 - ✅ **Excel File Support**: Read and validate .xlsx and .xls files
 - ✅ **Dynamic Rule Engine**: Rules are parsed and applied automatically
 - ✅ **Windows GUI**: User-friendly graphical interface using tkinter
@@ -43,7 +43,7 @@ python gui_app.py
 **Steps:**
 1. Click "Browse..." to select your Excel file
 2. Click "Load Data" to load the Excel data
-3. Enter validation rules in natural language
+3. Enter validation rules using expression syntax
 4. Click "Add Rule" to add each rule
 5. Click "Validate Data" to run validation
 6. View results and export if needed
@@ -67,39 +67,50 @@ python cli_app.py sample_electrical_data.xlsx --rules sample_rules.txt --output 
 
 ## Rule Syntax
 
-Rules are written in natural language. The system automatically parses them into executable validation logic.
+Rules are written using expression-based syntax with column names and operators.
 
 ### Rule Structure
 ```
-If [condition] and/or [condition], then [action/message]
+column operator value
+(column operator value) LOGICAL_OP (column operator value)
 ```
 
 ### Supported Operators
 
-- **Comparison**: greater than, less than, equal to, not equal to
-- **Numeric**: >, <, >=, <=, ==, !=
-- **Logical**: and, or
+- **Comparison**: >, <, >=, <=, =, !=
+- **String**: contains, starts_with, ends_with
+- **Logical**: AND, OR
 
 ### Example Rules
 
 1. **Simple Comparison**:
    ```
-   If current is greater than 2, then current validation ok
+   Current>2
    ```
 
-2. **Multiple Conditions**:
+2. **Multiple Conditions with AND**:
    ```
-   If current is greater than 2 and JB_Property is YES, then JB validation is ok
-   ```
-
-3. **Complex Logic**:
-   ```
-   If Ratio is less than 5 and Status is Active, then validation passed
+   (Current>2) AND (JB_Property=YES)
    ```
 
-4. **Real-world Example**:
+3. **Column-to-Column Comparison**:
    ```
-   If Starting_Current is greater than 10 and Rated_Current is less than 3, then current mismatch error
+   Starting_Current>Rated_Current
+   ```
+
+4. **String Contains Check**:
+   ```
+   voltage contains "cc_r"
+   ```
+
+5. **OR Logic**:
+   ```
+   (A>10) OR (B<5)
+   ```
+
+6. **Complex Expression**:
+   ```
+   (Ratio>5) AND (Status=Active)
    ```
 
 ## Sample Data
@@ -126,7 +137,7 @@ This creates:
 ### Components
 
 1. **excel_reader.py**: Excel file reading and data extraction
-2. **rule_parser.py**: Natural language rule parsing
+2. **rule_parser.py**: Expression-based rule parsing
 3. **rule_engine.py**: Rule execution and validation logic
 4. **gui_app.py**: Windows GUI application
 5. **cli_app.py**: Command-line interface
@@ -136,7 +147,7 @@ This creates:
 ```
 Excel File → Excel Reader → Data Frame
                                ↓
-Natural Language Rules → Rule Parser → Parsed Rules
+Expression Rules → Rule Parser → Parsed Rules
                                ↓
                          Rule Engine → Validation Results
 ```
@@ -144,15 +155,26 @@ Natural Language Rules → Rule Parser → Parsed Rules
 ## Best Practices
 
 1. **Column Names**: Use clear, descriptive column names in your Excel files
-2. **Rule Clarity**: Write rules as clearly as possible
+2. **Rule Clarity**: Write rules using explicit column names and operators
 3. **Testing**: Test rules with a small dataset first
 4. **Validation**: Review validation results before taking action
 5. **Backup**: Always keep a backup of your original Excel files
 
 ## Advanced Features
 
-### Custom Column Mapping
-The system automatically detects column names from your Excel file and matches them case-insensitively in rules.
+### Column-to-Column Comparison
+The system supports comparing values between columns:
+```
+Current>Threshold
+Starting_Current>Rated_Current
+```
+
+### String Operations
+Check if column values contain specific strings:
+```
+Status contains "Active"
+Equipment_ID starts_with "EQ"
+```
 
 ### Batch Validation
 Process multiple Excel files by running the CLI tool in a loop or batch script.
@@ -164,8 +186,8 @@ Results can be exported to text files for reporting and auditing.
 
 ### Common Issues
 
-1. **"Column not found" error**: Ensure column names in rules match Excel columns
-2. **"Failed to parse rule" error**: Check rule syntax and structure
+1. **"Column not found" error**: Ensure column names in rules match Excel columns exactly
+2. **"Failed to parse rule" error**: Check rule syntax - use expression format (e.g., A>B, not "A is greater than B")
 3. **Import errors**: Ensure all dependencies are installed: `pip install -r requirements.txt`
 
 ### Getting Help
@@ -188,20 +210,21 @@ This project is open source and available under the MIT License.
 
 **Data**: Electrical equipment with current ratings
 **Rules**:
-- If current > 2A and JB property is YES, then JB validation ok
-- If starting current / rated current < 5, then ratio error
+- `(Current>2) AND (JB_Property=YES)`
+- `Ratio>5`
+- `Starting_Current>Rated_Current`
 
 ### Example 2: Quality Control
 
 **Data**: Product measurements
 **Rules**:
-- If weight is greater than 100 and quality is A, then quality check passed
-- If temperature is less than 20 or humidity is greater than 80, then environment warning
+- `(Weight>100) AND (Quality=A)`
+- `(Temperature<20) OR (Humidity>80)`
 
 ## Future Enhancements
 
-- [ ] Support for more complex rule logic
-- [ ] Machine learning for rule suggestions
+- [ ] Support for more complex expressions with parentheses
+- [ ] Rule templates library
 - [ ] Integration with databases
 - [ ] Web-based interface
 - [ ] Real-time validation

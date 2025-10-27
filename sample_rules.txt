@@ -1,6 +1,11 @@
 # Sample validation rules for electrical equipment data
-# Rules can be written in natural language
+# Rules are now expression-based
 
-If current is greater than 2 and JB_Property is YES, then JB validation is ok
-If Ratio is greater than 5, then Ratio exceeds limit
-If Starting_Current is less than 10 and Rated_Current is greater than 2, then Current mismatch
+# Example 1: Simple comparison with AND
+(Current>2) AND (JB_Property=YES)
+
+# Example 2: Greater than comparison
+Ratio>5
+
+# Example 3: Column-to-column comparison
+Starting_Current>Rated_Current

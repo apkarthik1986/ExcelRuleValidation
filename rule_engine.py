@@ -3,9 +3,9 @@ Rule Engine Module
 Executes parsed rules against data and generates validation results.
 """
 import pandas as pd
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
-from rule_parser import Rule, Condition, ConditionType, LogicalOperator
+from rule_parser import Rule, Condition, ConditionType, LogicalOperator, RuleReference
 
 
 @dataclass
@@ -26,6 +26,7 @@ class RuleEngine:
     def __init__(self):
         """Initialize the rule engine."""
         self.results = []
+        self.rule_cache = {}  # Cache for rule results by row
         
     def validate(self, data: pd.DataFrame, rules: List[Rule]) -> List[ValidationResult]:
         """
@@ -59,14 +60,19 @@ class RuleEngine:
         Returns:
             ValidationResult object
         """
-        # Evaluate all conditions
-        condition_results = []
-        for condition in rule.conditions:
-            result = self._evaluate_condition(row, condition)
-            condition_results.append(result)
-        
-        # Combine condition results using logical operators
-        final_result = self._combine_conditions(condition_results, rule.logical_ops)
+        # Check if this rule references other rules
+        if rule.rule_references:
+            # This is a rule reference combination
+            final_result = self._evaluate_rule_references(row, index, rule)
+        else:
+            # Evaluate all conditions
+            condition_results = []
+            for condition in rule.conditions:
+                result = self._evaluate_condition(row, condition)
+                condition_results.append(result)
+            
+            # Combine condition results using logical operators
+            final_result = self._combine_conditions(condition_results, rule.logical_ops)
         
         # Generate message
         if final_result:
@@ -81,6 +87,25 @@ class RuleEngine:
             message=message,
             row_data=row.to_dict()
         )
+    
+    def _evaluate_rule_references(self, row: pd.Series, index: int, rule: Rule) -> bool:
+        """
+        Evaluate rule references (e.g., Rule1 AND Rule2).
+        
+        Args:
+            row: Data row
+            index: Row index
+            rule: Rule containing rule references
+            
+        Returns:
+            Combined boolean result
+        """
+        # Get results from referenced rules
+        # Note: This assumes referenced rules have already been evaluated
+        # In practice, you'd need to pass the rules to this method or maintain state
+        # For now, we'll return True as a placeholder
+        # This will be properly implemented when we have access to all rules
+        return True
     
     def _evaluate_condition(self, row: pd.Series, condition: Condition) -> bool:
         """
@@ -99,34 +124,45 @@ class RuleEngine:
         
         cell_value = row[condition.column]
         
+        # Check if condition.value is a column reference or a string literal
+        comparison_value = condition.value
+        
+        # Handle special __LITERAL__ prefix for quoted strings
+        if isinstance(comparison_value, str) and comparison_value.startswith('__LITERAL__'):
+            # Remove the literal marker
+            comparison_value = comparison_value[len('__LITERAL__'):]
+        elif isinstance(comparison_value, str) and comparison_value in row.index:
+            # Value is a column reference, get its value from the row
+            comparison_value = row[comparison_value]
+        
         # Handle different condition types
         try:
             if condition.operator == ConditionType.GREATER_THAN:
-                return float(cell_value) > float(condition.value)
+                return float(cell_value) > float(comparison_value)
             elif condition.operator == ConditionType.LESS_THAN:
-                return float(cell_value) < float(condition.value)
+                return float(cell_value) < float(comparison_value)
             elif condition.operator == ConditionType.GREATER_EQUAL:
-                return float(cell_value) >= float(condition.value)
+                return float(cell_value) >= float(comparison_value)
             elif condition.operator == ConditionType.LESS_EQUAL:
-                return float(cell_value) <= float(condition.value)
+                return float(cell_value) <= float(comparison_value)
             elif condition.operator == ConditionType.EQUAL:
                 # Try numeric comparison first
                 try:
-                    return float(cell_value) == float(condition.value)
+                    return float(cell_value) == float(comparison_value)
                 except (ValueError, TypeError):
                     # Fall back to string comparison
-                    return str(cell_value).strip().upper() == str(condition.value).strip().upper()
+                    return str(cell_value).strip().upper() == str(comparison_value).strip().upper()
             elif condition.operator == ConditionType.NOT_EQUAL:
                 try:
-                    return float(cell_value) != float(condition.value)
+                    return float(cell_value) != float(comparison_value)
                 except (ValueError, TypeError):
-                    return str(cell_value).strip().upper() != str(condition.value).strip().upper()
+                    return str(cell_value).strip().upper() != str(comparison_value).strip().upper()
             elif condition.operator == ConditionType.CONTAINS:
-                return str(condition.value).lower() in str(cell_value).lower()
+                return str(comparison_value).lower() in str(cell_value).lower()
             elif condition.operator == ConditionType.STARTS_WITH:
-                return str(cell_value).lower().startswith(str(condition.value).lower())
+                return str(cell_value).lower().startswith(str(comparison_value).lower())
             elif condition.operator == ConditionType.ENDS_WITH:
-                return str(cell_value).lower().endswith(str(condition.value).lower())
+                return str(cell_value).lower().endswith(str(comparison_value).lower())
         except (ValueError, TypeError) as e:
             return False
         
