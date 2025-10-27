@@ -17,12 +17,6 @@ A powerful Windows application for validating Excel data using expression-based 
 
 ### System Requirements
 
-#### Minimum Requirements
-- **Operating System**: Windows 7 or higher
-- **Python**: Version 3.10 or higher
-- **RAM**: 4 GB minimum
-- **Disk Space**: 500 MB for installation and dependencies
-
 #### Recommended
 - **Operating System**: Windows 10/11 
 - **Python**: Version 3.11 (recommended for best performance)
