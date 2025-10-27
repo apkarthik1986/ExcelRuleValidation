@@ -23,7 +23,7 @@ class ExcelReader:
         self.workbook = None
         self.data_frame = None
         
-    def load(self, sheet_name: Optional[str] = None) -> pd.DataFrame:
+    def load(self, sheet_name: Optional[str] = None, header_row: Optional[int] = 0) -> pd.DataFrame:
         """
         Load Excel file into a pandas DataFrame.
         
@@ -34,10 +34,13 @@ class ExcelReader:
             DataFrame containing the Excel data
         """
         try:
+            # pandas read_excel header parameter expects row index (0-based).
+            # header_row is 0-based here; pass through to pandas so users can
+            # choose which row contains column names (e.g. header_row=1 -> second row).
             if sheet_name:
-                self.data_frame = pd.read_excel(self.file_path, sheet_name=sheet_name)
+                self.data_frame = pd.read_excel(self.file_path, sheet_name=sheet_name, header=header_row)
             else:
-                self.data_frame = pd.read_excel(self.file_path)
+                self.data_frame = pd.read_excel(self.file_path, header=header_row)
             return self.data_frame
         except Exception as e:
             raise Exception(f"Error loading Excel file: {str(e)}")

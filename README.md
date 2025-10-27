@@ -31,6 +31,39 @@ cd ExcelRuleValidation
 pip install -r requirements.txt
 ```
 
+### Optional / Development Dependencies (ML)
+
+The repository includes optional, heavy ML/NLP packages used for advanced
+features (like transformer-based rule understanding and embeddings). These
+are not required to run the GUI or the tests, and they can be installed into
+an isolated development environment when needed.
+
+To install the optional packages into a separate venv (recommended):
+
+```powershell
+# Create a Python 3.11 venv (recommended for binary wheels)
+py -3.11 -m venv .venv311
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+.\.venv311\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r requirements-dev.txt
+```
+
+If you prefer conda (often easier for binary packages on Windows):
+
+```powershell
+conda create -n excelrules python=3.11 -y
+conda activate excelrules
+conda install -c conda-forge spacy transformers sentence-transformers -y
+conda install -c conda-forge pytorch cpuonly -y
+# Then install the remaining project requirements
+pip install -r requirements.txt --no-deps
+```
+
+Note: `torch` can be large and has platform-specific wheels. If you want a
+CPU-only wheel, use the PyTorch CPU index or conda as shown above.
+
+
 ## Usage
 
 ### GUI Application (Recommended for Windows)

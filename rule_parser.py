@@ -37,6 +37,18 @@ class Condition:
     def __str__(self):
         return f"{self.column} {self.operator.value} {self.value}"
 
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            'column': self.column,
+            'operator': self.operator.value,
+            'value': self.value
+        }
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> 'Condition':
+        op = ConditionType(d['operator']) if isinstance(d['operator'], str) else d['operator']
+        return Condition(column=d['column'], operator=op, value=d['value'])
+
 
 @dataclass
 class RuleReference:
@@ -45,6 +57,13 @@ class RuleReference:
     
     def __str__(self):
         return f"Rule:{self.rule_name}"
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {'rule_name': self.rule_name}
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> 'RuleReference':
+        return RuleReference(rule_name=d['rule_name'])
 
 
 @dataclass
@@ -56,6 +75,7 @@ class Rule:
     action: str
     description: str
     rule_references: List[RuleReference] = None
+    enabled: bool = True
     
     def __post_init__(self):
         if self.rule_references is None:
@@ -68,6 +88,33 @@ class Rule:
             if i < len(self.logical_ops):
                 cond_str += f" {self.logical_ops[i].value} "
         return f"Rule: {self.name}\nConditions: {cond_str}\nAction: {self.action}"
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            'name': self.name,
+            'conditions': [c.to_dict() for c in self.conditions],
+            'logical_ops': [op.value for op in self.logical_ops],
+            'action': self.action,
+            'description': self.description,
+            'rule_references': [rr.to_dict() for rr in (self.rule_references or [])],
+            'enabled': getattr(self, 'enabled', True)
+        }
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> 'Rule':
+        conditions = [Condition.from_dict(cd) for cd in d.get('conditions', [])]
+        logical_ops = [LogicalOperator(op) for op in d.get('logical_ops', [])]
+        refs = [RuleReference.from_dict(rd) for rd in d.get('rule_references', [])]
+        rule = Rule(
+            name=d.get('name'),
+            conditions=conditions,
+            logical_ops=logical_ops,
+            action=d.get('action', 'validation ok'),
+            description=d.get('description', ''),
+            rule_references=refs,
+            enabled=d.get('enabled', True)
+        )
+        return rule
 
 
 class RuleParser:
@@ -119,7 +166,16 @@ class RuleParser:
             action=action,
             description=expression
         )
-        
+        # If a rule with the same name already exists, update it (used by GUI edit)
+        if rule_name in self.rules_by_name:
+            existing = self.rules_by_name[rule_name]
+            existing.conditions = conditions
+            existing.logical_ops = logical_ops
+            existing.action = action
+            existing.description = expression
+            existing.rule_references = []
+            return existing
+
         self.rules.append(rule)
         self.rules_by_name[rule_name] = rule
         return rule
