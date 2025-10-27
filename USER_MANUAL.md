@@ -14,10 +14,10 @@
 
 ## Introduction
 
-The Excel Rule Validation System is a powerful tool that allows you to validate Excel data using natural language rules. Instead of writing complex code or formulas, you simply describe what you want to check in plain English.
+The Excel Rule Validation System is a powerful tool that allows you to validate Excel data using expression-based rules. Instead of writing complex code or formulas, you use simple expressions with column names and operators to define validation logic.
 
 ### Key Features
-- ✅ Natural language rule definition
+- ✅ Expression-based rule definition
 - ✅ Support for Excel .xlsx and .xls files
 - ✅ Windows-optimized GUI application
 - ✅ Command-line interface for automation
@@ -110,9 +110,10 @@ python gui_app.py
 
 **Example Rules:**
 ```
-If current is greater than 2 and JB_Property is YES, then JB validation is ok
-If Ratio is less than 5, then ratio error
-If Status is Active, then equipment is operational
+(Current>2) AND (JB_Property=YES)
+Ratio>5
+Status=Active
+voltage contains "cc_r"
 ```
 
 #### 3. Review Active Rules
@@ -206,9 +207,10 @@ Create a text file (e.g., `rules.txt`) with one rule per line:
 # My Validation Rules
 # Lines starting with # are comments
 
-If current is greater than 2 and JB_Property is YES, then JB validation is ok
-If Ratio is greater than 5, then Ratio exceeds limit
-If Starting_Current is less than 10, then starting current too low
+(Current>2) AND (JB_Property=YES)
+Ratio>5
+Starting_Current>Rated_Current
+voltage contains "cc_r"
 ```
 
 ### Interactive Mode Workflow
@@ -227,59 +229,69 @@ If Starting_Current is less than 10, then starting current too low
 
 **Basic Structure:**
 ```
-If [condition], then [action/message]
+column operator value
 ```
 
 **Multiple Conditions:**
 ```
-If [condition1] and [condition2], then [action]
-If [condition1] or [condition2], then [action]
+(condition1) AND (condition2)
+(condition1) OR (condition2)
+```
+
+**Examples:**
+```
+Current>2
+(Current>2) AND (JB_Property=YES)
+Starting_Current>Rated_Current
+voltage contains "cc_r"
 ```
 
 ### Condition Operators
 
-| Operator | Keywords | Example |
-|----------|----------|---------|
-| Greater than | greater than, more than, above, exceeds | `current is greater than 2` |
-| Less than | less than, below, under | `ratio is less than 5` |
-| Equal to | equal to, equals, is, has | `status is Active` |
-| Not equal | not equal to, not equals | `type not equals Manual` |
-| Greater/Equal | greater than or equal, at least | `count is at least 10` |
-| Less/Equal | less than or equal, at most | `value is at most 100` |
+| Operator | Symbol | Example |
+|----------|--------|---------|
+| Greater than | `>` | `Current>2` |
+| Less than | `<` | `Ratio<5` |
+| Equal to | `=` | `Status=Active` |
+| Not equal | `!=` | `Type!=Manual` |
+| Greater/Equal | `>=` | `Count>=10` |
+| Less/Equal | `<=` | `Value<=100` |
+| Contains | `contains` | `voltage contains "cc_r"` |
+| Starts with | `starts_with` | `ID starts_with "EQ"` |
+| Ends with | `ends_with` | `Name ends_with "Test"` |
 
 ### Logical Operators
 
-- **AND**: Both conditions must be true
-  ```
-  If current is greater than 2 and JB_Property is YES, then validation ok
-  ```
-
-- **OR**: At least one condition must be true
-  ```
-  If status is Error or status is Failed, then check required
-  ```
+| Operator | Usage | Example |
+|----------|-------|---------|
+| AND | Both conditions must be true | `(A>B) AND (X=Y)` |
+| OR | At least one condition must be true | `(A>10) OR (B<5)` |
 
 ### Column References
 
 - Column names are **case-insensitive**
 - Use the exact column name from your Excel file
-- Spaces are preserved
-
-**Example:**
-If your Excel has a column named "Starting Current", use:
-```
-If Starting Current is greater than 10, then...
-```
+- Spaces are preserved in column names
 
 ### Value Types
 
 **Numeric Values:**
 ```
-If current is greater than 2.5, then...
-If count equals 10, then...
+Current>2.5
+Count>=10
 ```
 
 **Text Values:**
+```
+Status=Active
+JB_Property=YES
+```
+
+**Column References (Column-to-Column):**
+```
+Starting_Current>Rated_Current
+A>B
+```
 ```
 If status is Active, then...
 If JB_Property is YES, then...

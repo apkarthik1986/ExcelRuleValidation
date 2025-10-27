@@ -39,8 +39,8 @@ This guide will help you get started with the Excel Rule Validation System in 5 
    - Preview your data in the table
 
 3. **Add Validation Rules**
-   - Type your rule in plain English in the rule input box
-   - Example: `If current is greater than 2 and JB_Property is YES, then JB validation is ok`
+   - Type your rule using expression syntax in the rule input box
+   - Example: `(Current>2) AND (JB_Property=YES)`
    - Click "Add Rule"
    - Repeat for each rule
 
@@ -93,33 +93,37 @@ This guide will help you get started with the Excel Rule Validation System in 5 
 
 ### Basic Rule Structure
 ```
-If [condition], then [action/message]
+column operator value
+(column operator value) LOGICAL_OP (column operator value)
 ```
 
 ### Examples
 
 **Simple Comparison:**
 ```
-If current is greater than 2, then validation ok
+Current>2
 ```
 
 **Multiple Conditions:**
 ```
-If current is greater than 2 and JB_Property is YES, then JB validation is ok
+(Current>2) AND (JB_Property=YES)
 ```
 
-**Ratio Check:**
+**Column-to-Column Comparison:**
 ```
-If Ratio is less than 5, then ratio error
+Starting_Current>Rated_Current
+```
+
+**String Contains:**
+```
+voltage contains "cc_r"
 ```
 
 ### Supported Operators
 
-- **Greater than**: `greater than`, `more than`, `above`, `exceeds`
-- **Less than**: `less than`, `below`, `under`
-- **Equal to**: `equal to`, `equals`, `is`, `has`
-- **Not equal**: `not equal to`, `not equals`
-- **Logical**: `and`, `or`
+- **Comparison**: `>`, `<`, `>=`, `<=`, `=`, `!=`
+- **String**: `contains`, `starts_with`, `ends_with`
+- **Logical**: `AND`, `OR`
 
 ## Tips for Success
 
@@ -133,20 +137,21 @@ If Ratio is less than 5, then ratio error
 
 ### Electrical Equipment Validation
 ```
-If current is greater than 2 and JB_Property is YES, then JB validation is ok
-If Ratio is greater than 5, then Ratio exceeds limit
+(Current>2) AND (JB_Property=YES)
+Ratio>5
+Starting_Current>Rated_Current
 ```
 
 ### Quality Control
 ```
-If weight is greater than 100 and quality is A, then quality check passed
-If temperature is less than 20, then temperature warning
+(Weight>100) AND (Quality=A)
+Temperature<20
 ```
 
 ### Inventory Management
 ```
-If quantity is less than 10 and status is Active, then reorder needed
-If price is greater than 1000, then approval required
+(Quantity<10) AND (Status=Active)
+Price>1000
 ```
 
 ## Troubleshooting

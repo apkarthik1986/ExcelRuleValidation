@@ -1,17 +1,18 @@
 # Project Summary - Excel Rule Validation System
 
 ## Overview
-This project implements a comprehensive Excel data validation system that allows users to define validation rules in natural language and automatically apply them to Excel data.
+This project implements a comprehensive Excel data validation system that allows users to define validation rules using expression-based syntax and automatically apply them to Excel data.
 
 ## Implementation Complete ✅
 
 ### Core Features Implemented
 
-1. **Natural Language Rule Parsing**
-   - Converts plain English rules to executable validation logic
-   - Supports multiple condition types (>, <, =, etc.)
+1. **Expression-Based Rule Parsing**
+   - Converts expression syntax to executable validation logic
+   - Supports multiple operators (>, <, =, >=, <=, !=)
    - Handles logical operators (AND, OR)
-   - Automatic column name detection
+   - Supports string operations (contains, starts_with, ends_with)
+   - Column-to-column comparisons
 
 2. **Excel File Processing**
    - Reads .xlsx and .xls files
@@ -73,8 +74,9 @@ ExcelRuleValidation/
 2. Load Excel file
 3. Add rules:
    ```
-   If current is greater than 2 and JB_Property is YES, then JB validation is ok
-   If Ratio is greater than 5, then Ratio exceeds limit
+   (Current>2) AND (JB_Property=YES)
+   Ratio>5
+   Starting_Current>Rated_Current
    ```
 4. Click "Validate Data"
 5. Review results and export
@@ -101,36 +103,42 @@ Passed: 7
 Failed: 8
 ```
 
-### Example 3: Natural Language Rules
+### Example 3: Expression-Based Rules
 
-The system understands these natural language patterns:
+The system uses expression-based syntax for rules:
 
-**Simple Condition:**
+**Simple Expression:**
 ```
-If current is greater than 2, then validation ok
-```
-
-**Multiple Conditions:**
-```
-If current is greater than 2 and JB_Property is YES, then JB validation is ok
+Current>2
 ```
 
-**Complex Logic:**
+**Combined Conditions:**
 ```
-If Starting_Current is less than 10 and Rated_Current is greater than 2, then Current mismatch
+(Current>2) AND (JB_Property=YES)
+```
+
+**Column Comparison:**
+```
+Starting_Current>Rated_Current
+```
+
+**String Operations:**
+```
+voltage contains "cc_r"
 ```
 
 ## Technical Highlights
 
 ### 1. Rule Parser Architecture
-- Regex-based pattern matching
-- Fuzzy column name matching
-- Operator keyword mapping
-- Value type inference (numeric vs. text)
+- Expression-based parsing
+- Operator detection (>, <, =, >=, <=, !=, contains)
+- Column name matching
+- Value type inference (numeric vs. text vs. column reference)
 
 ### 2. Rule Engine Design
 - Row-by-row validation
 - Condition evaluation with type handling
+- Column-to-column comparison support
 - Logical operator combination
 - Detailed failure tracking
 
