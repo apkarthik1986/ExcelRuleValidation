@@ -332,6 +332,7 @@ This project is open source and available under the MIT License.
 - [ ] Web-based interface
 - [ ] Real-time validation
 - [ ] Multi-language support
+- [ ] Validations for multiple files with multiple rules. Files needs to have atleast one relationship.
 
 ## Contact
 
